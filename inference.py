@@ -29,7 +29,7 @@ from openvino.inference_engine import IENetwork, IECore
 
 class Network:
     def __init__(self):
-        ### TODO: Initialize any class variables desired ###
+        ###   Initialize any class variables desired ###
         self.net = None
         ie = None
         self.input_blob = None
@@ -38,7 +38,7 @@ class Network:
         self.infer_request_handle = None
 
     def load_model(self, model, device, input_size, output_size, num_requests, cpu_extension):
-        ### TODO: Load the model ###
+        ###   Load the model ###
         xml_file = model
         bin_file = os.path.splitext(xml_file)[0] + ".bin"
         
@@ -51,7 +51,7 @@ class Network:
         log.info("Reading IR...")
         self.net = IENetwork(model=xml_file, weights=bin_file)
         
-        ### TODO: Check for supported layers ###
+        ###   Check for supported layers ###
         if "CPU" in device:
             supported_layers = inference_engine.query_network(self.net, "CPU")
             not_supported_layers = [l for l in self.net.layers.keys() if l not in supported_layers]
@@ -67,27 +67,27 @@ class Network:
         self.out_blob = next(iter(self.net.outputs))
         assert len(self.net.inputs.keys()) == input_size, "Supports only {} input topologies".format(len(self.net.inputs))
         assert len(self.net.outputs) == output_size, "Supports only {} output topologies".format(len(self.net.outputs))
-        ### TODO: Return the loaded inference plugin ###
+        ###   Return the loaded inference plugin ###
         return inference_engine, self.get_input_shape()
 
     def get_input_shape(self):
-        ### TODO: Return the shape of the input layer ###
+        ###   Return the shape of the input layer ###
         return self.net.inputs[self.input_blob].shape
 
     def exec_net(self, request_id, frame):
-        ### TODO: Start an asynchronous request ###
+        ###   Start an asynchronous request ###
         self.infer_request_handle = self.net_plugin.start_async(request_id=request_id, inputs={self.input_blob: frame})
-        ### TODO: Return any necessary information ###
+        ###   Return any necessary information ###
         return self.net_plugin
 
     def wait(self, request_id):
-        ### TODO: Wait for the request to be complete. ###
+        ###   Wait for the request to be complete. ###
         infer_status = self.net_plugin.requests[request_id].wait(-1)
-        ### TODO: Return any necessary information ###
+        ###   Return any necessary information ###
         return infer_status
 
     def get_output(self, request_id, output=None):
-        ### TODO: Extract and return the output results
+        ###   Extract and return the output results
         if output:
             res = self.infer_request_handle.outputs[output]
         else:

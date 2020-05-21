@@ -134,10 +134,10 @@ def infer_on_stream(args, mqtt_client):
     
     cur_request_id = 0
     
-    ### TODO: Load the model through `infer_network` ### 
+    ###   Load the model through `infer_network` ### 
     n, c, h, w = infer_network.load_model(args.model, args.device, 1, 1, cur_request_id, args.cpu_extension)[1]
 
-    ### TODO: Handle the input stream ###
+    ###   Handle the input stream ###
     if args.input == 'CAM':
         input_stream = 0
     elif args.input.endswith('.jpg') or args.input.endswith('.bmp'):
@@ -168,33 +168,33 @@ def infer_on_stream(args, mqtt_client):
     initial_h = capture.get(4)
     prob_threshold = args.prob_threshold
     
-    ### TODO: Loop until stream is over ###
+    ###   Loop until stream is over ###
     while capture.isOpened():
-        ### TODO: Read from the video capture ###
+        ###   Read from the video capture ###
         flag, frame = capture.read()
         if not flag:
             break
         key_pressed = cv2.waitKey(60)
         
-        ### TODO: Pre-process the image as needed ###
+        ###   Pre-process the image as needed ###
         ### Change layout from HxWxC to CxHxW ###
         image = cv2.resize(frame, (w, h))
         image = image.transpose((2, 0, 1))
         image = image.reshape((n, c, h, w))
         
-        ### TODO: Start asynchronous inference for specified request ###
+        ###   Start asynchronous inference for specified request ###
         start_time = time.time()
         infer_network.exec_net(cur_request_id, image)
         
-        ### TODO: Wait for the result ###
+        ###   Wait for the result ###
         if infer_network.wait(cur_request_id) == 0:
             # Note the end time and calculate inference time
             inference_time = time.time() - start_time
 
-            ### TODO: Get the results of the inference request ###
+            ###   Get the results of the inference request ###
             result = infer_network.get_output(cur_request_id)
             
-            ### TODO: Extract any desired stats from the results ###
+            ###   Extract any desired stats from the results ###
             frame, current_count = draw_bounding_box(result, frame, initial_w, initial_h)
             
             # Adding overlays for the inference time
@@ -226,11 +226,11 @@ def infer_on_stream(args, mqtt_client):
             if key_pressed == 27:
                 break
 
-        ### TODO: Send the frame to the FFMPEG server ###
+        ###   Send the frame to the FFMPEG server ###
         sys.stdout.buffer.write(frame)  
         sys.stdout.flush()
         
-        ### TODO: Write an output image if `single_image_mode` ###
+        ###   Write an output image if `single_image_mode` ###
         if single_img_flag:
             cv2.imwrite('output_image.jpg', frame)
        
